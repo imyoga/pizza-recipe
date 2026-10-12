@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizza Dough Calculator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px 12px;
+      font-family: system-ui, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin: 0 0 20px;
+    }
+
+    .flour-input {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      background: white;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 10px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: #fafafa;
+      font-size: 14px;
+    }
+
+    td:first-child,
+    th:first-child {
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .recommended {
+      background: #f0f7ff;
+    }
+
+    .note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🍕 Pizza Dough Calculator</h1>
+
+    <div class="flour-input">
+      <label for="flour">Flour (grams)</label>
+      <input
+        id="flour"
+        type="number"
+        value="600"
+        min="100"
+        step="50"
+      />
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Ingredient</th>
+            <th>My 1st</th>
+            <th class="recommended">Recommended</th>
+          </tr>
+        </thead>
+
+        <tbody id="ingredients"></tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      Measurements are scaled from the 600 g flour recipes.
+      Water is shown in ml; smaller ingredients remain in tsp/tbsp.
+    </div>
+  </div>
+
+  <script>
+    const recipes = {
+      first: {
+        water: 450,
+        salt: 3,
+        sugar: 4,
+        oil: 4,
+        yeast: 2
+      },
+
+      recommended: {
+        water: 400,
+        salt: 3,
+        sugar: 2.5,
+        oil: 2,
+        yeast: 1.75
+      }
+    };
+
+    const ingredients = [
+      ["Water", "water", "ml"],
+      ["Salt", "salt", "tsp"],
+      ["Sugar", "sugar", "tsp"],
+      ["Oil", "oil", "tbsp"],
+      ["Yeast", "yeast", "tsp"]
+    ];
+
+    const flourInput = document.getElementById("flour");
+    const tbody = document.getElementById("ingredients");
+
+    function format(value) {
+      if (Number.isInteger(value)) return value;
+      return Math.round(value * 4) / 4;
+    }
+
+    function calculate() {
+      const flour = Number(flourInput.value) || 600;
+      const scale = flour / 600;
+
+      tbody.innerHTML = "";
+
+      ingredients.forEach(([name, key, unit]) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${format(recipes.first[key] * scale)} ${unit}</td>
+          <td class="recommended">
+            ${format(recipes.recommended[key] * scale)} ${unit}
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    flourInput.addEventListener("input", calculate);
+
+    calculate();
+  </script>
+</body>
+</html>
