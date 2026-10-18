@@ -4,138 +4,606 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pizza Dough Calculator</title>
-
   <style>
+    :root {
+      --primary: #d9381e;
+      --primary-light: #fff3f0;
+      --primary-border: #fca591;
+      --recommended-bg: #eff6ff;
+      --recommended-border: #93c5fd;
+      --recommended-accent: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    }
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      padding: 20px 12px;
-      font-family: system-ui, sans-serif;
-      background: #f5f5f5;
-      color: #222;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      padding: 24px 14px 48px;
+      line-height: 1.5;
     }
 
     .container {
-      max-width: 600px;
-      margin: auto;
+      max-width: 680px;
+      margin: 0 auto;
     }
 
-    h1 {
-      font-size: 24px;
-      margin: 0 0 20px;
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
     }
 
-    .flour-input {
-      background: white;
-      padding: 16px;
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    /* Config Controls */
+    .control-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-label span.hint {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* Stepper */
+    .stepper-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .step-btn {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--border);
+      background: #f1f5f9;
       border-radius: 10px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .step-btn:hover:not(:disabled) {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+
+    .step-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    .step-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .pizza-display-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      height: 48px;
+      padding: 0 12px;
+      transition: border-color 0.2s;
+    }
+
+    .pizza-display-box:focus-within {
+      border-color: var(--primary);
+    }
+
+    .pizza-display-box input {
+      width: 60px;
+      border: none;
+      outline: none;
+      font-size: 22px;
+      font-weight: 800;
+      text-align: right;
+      color: var(--primary);
+      background: transparent;
+    }
+
+    .pizza-display-box .unit-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    /* Preset Buttons */
+    .presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
       margin-bottom: 16px;
     }
 
-    label {
-      display: block;
+    .preset-chip {
+      padding: 6px 14px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      font-size: 13px;
       font-weight: 600;
-      margin-bottom: 8px;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
 
-    input {
-      width: 100%;
-      padding: 12px;
-      font-size: 18px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    .preset-chip:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
     }
 
+    .preset-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Flour secondary row */
+    .flour-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .flour-row label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .flour-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .flour-input-wrap input {
+      width: 100px;
+      padding: 6px 10px;
+      font-size: 15px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      text-align: right;
+    }
+
+    /* Dough Ball Weight Stat Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+
+    .stat-card.recommended {
+      background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+      border: 1.5px solid var(--recommended-border);
+    }
+
+    .stat-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      width: fit-content;
+      margin-bottom: 4px;
+    }
+
+    .stat-card.recommended .stat-badge {
+      background: #dbeafe;
+      color: var(--recommended-accent);
+    }
+
+    .stat-card.standard .stat-badge {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .ball-weight-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .ball-weight-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .ball-weight-val small {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .batch-total-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .batch-total-sub strong {
+      color: #334155;
+    }
+
+    /* Ingredients Table */
     .table-wrapper {
-      overflow-x: auto;
-      background: white;
-      border-radius: 10px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 20px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      text-align: left;
     }
 
-    th,
-    td {
-      padding: 12px 10px;
-      text-align: center;
-      border-bottom: 1px solid #eee;
+    thead th {
+      padding: 14px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
     }
 
-    th {
-      background: #fafafa;
+    thead th:first-child {
+      width: 30%;
+    }
+
+    thead th.recommended-col {
+      background: #eff6ff;
+      color: var(--recommended-accent);
+      border-bottom-color: var(--recommended-border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #fbfcfe;
+    }
+
+    tbody td {
+      padding: 13px 12px;
+      vertical-align: middle;
       font-size: 14px;
     }
 
-    td:first-child,
-    th:first-child {
-      text-align: left;
+    td.ingredient-name {
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    td.recommended-col {
+      background: #f8fbff;
+    }
+
+    .measure-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .primary-measure {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .recommended-col .primary-measure {
+      color: #1e3a8a;
+    }
+
+    .gram-tag {
+      font-size: 11px;
       font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
     }
 
-    .recommended {
-      background: #f0f7ff;
+    .recommended-col .gram-tag {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-color: #bae6fd;
     }
 
-    .note {
-      margin-top: 14px;
+    .easy-scoop-hint {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.3;
+      margin-top: 1px;
+    }
+
+    /* Helper / Cheat Sheet */
+    .cheat-sheet {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 24px;
+    }
+
+    .cheat-sheet-title {
       font-size: 13px;
-      color: #666;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .cheat-item {
+      background: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .cheat-item strong {
+      color: #0f172a;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 16px 10px 32px;
+      }
+      .header h1 {
+        font-size: 23px;
+      }
+      .card {
+        padding: 16px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      thead th, tbody td {
+        padding: 10px 8px;
+      }
+      .primary-measure {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>🍕 Pizza Dough Calculator</h1>
-
-    <div class="flour-input">
-      <label for="flour">Flour (grams)</label>
-      <input
-        id="flour"
-        type="number"
-        value="600"
-        min="100"
-        step="50"
-      />
+    <div class="header">
+      <h1>🍕 Pizza Dough Calculator</h1>
+      <p>Configure number of pizzas with easy spoon measurements & ball weights</p>
     </div>
 
+    <!-- Configuration Card -->
+    <div class="card">
+      <div class="control-label">
+        <span>Number of Medium Pizzas</span>
+        <span class="hint">12" (approx. 30 cm)</span>
+      </div>
+
+      <div class="stepper-wrap">
+        <button type="button" class="step-btn" id="btn-minus" aria-label="Decrease pizzas">−</button>
+        <div class="pizza-display-box">
+          <input type="number" id="pizza-count" value="4" min="1" max="50" step="1" />
+          <span class="unit-text" id="pizza-count-label">Pizzas</span>
+        </div>
+        <button type="button" class="step-btn" id="btn-plus" aria-label="Increase pizzas">+</button>
+      </div>
+
+      <!-- Quick Preset Chips -->
+      <div class="presets" id="presets">
+        <button type="button" class="preset-chip" data-pizzas="1">1 Pizza</button>
+        <button type="button" class="preset-chip" data-pizzas="2">2 Pizzas</button>
+        <button type="button" class="preset-chip" data-pizzas="3">3 Pizzas</button>
+        <button type="button" class="preset-chip active" data-pizzas="4">4 Pizzas (Default)</button>
+        <button type="button" class="preset-chip" data-pizzas="6">6 Pizzas</button>
+        <button type="button" class="preset-chip" data-pizzas="8">8 Pizzas</button>
+      </div>
+
+      <!-- Synchronized Flour Amount -->
+      <div class="flour-row">
+        <label for="flour">Total Flour (150 g / pizza):</label>
+        <div class="flour-input-wrap">
+          <input type="number" id="flour" value="600" min="50" step="25" />
+          <span>g</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dough Ball Weight & Batch Summary Cards -->
+    <div class="stats-grid">
+      <!-- Recommended Recipe Card -->
+      <div class="stat-card recommended">
+        <span class="stat-badge">⭐ Recommended</span>
+        <div class="ball-weight-title">Dough Ball Weight</div>
+        <div class="ball-weight-val" id="rec-ball-weight">~265 <small>g / ball</small></div>
+        <div class="batch-total-sub">
+          Total Batch: <strong id="rec-total-weight">1,061 g</strong> (66.7% hydration)
+        </div>
+      </div>
+
+      <!-- 1st Recipe Card -->
+      <div class="stat-card standard">
+        <span class="stat-badge">My 1st Recipe</span>
+        <div class="ball-weight-title">Dough Ball Weight</div>
+        <div class="ball-weight-val" id="first-ball-weight">~286 <small>g / ball</small></div>
+        <div class="batch-total-sub">
+          Total Batch: <strong id="first-total-weight">1,145 g</strong> (75% hydration)
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingredients Table -->
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>Ingredient</th>
             <th>My 1st</th>
-            <th class="recommended">Recommended</th>
+            <th class="recommended-col">⭐ Recommended</th>
           </tr>
         </thead>
-
-        <tbody id="ingredients"></tbody>
+        <tbody id="ingredients-tbody"></tbody>
       </table>
     </div>
 
-    <div class="note">
-      Measurements are scaled from the 600 g flour recipes.
-      Water is shown in ml; smaller ingredients remain in tsp/tbsp.
+    <!-- Spoon Measuring Guide -->
+    <div class="cheat-sheet">
+      <div class="cheat-sheet-title">🥄 Quick Spoon Measurement Guide (No Counting Confusion)</div>
+      <div class="cheat-grid">
+        <div class="cheat-item"><strong>1 tbsp</strong> = 3 tsp (15 ml)</div>
+        <div class="cheat-item"><strong>½ tbsp</strong> = 1 ½ tsp (7.5 ml)</div>
+        <div class="cheat-item"><strong>1 ½ tbsp</strong> = 1 tbsp + 1 ½ tsp</div>
+        <div class="cheat-item"><strong>Scale friendly:</strong> Exact grams included!</div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Scaled from base 4-pizza (600 g flour) recipes. Each dough ball creates one 12" medium pizza.
+      <br>Tip: For easiest measuring without counting spoons, use a digital scale with the gram weights!
     </div>
   </div>
 
   <script>
+    // Base recipe definition for 4 medium pizzas (600 g flour)
+    // Gram weights are calibrated for standard baking:
+    // Flour: 150g/pizza (600g base)
+    // Water: 1ml = 1g
+    // Salt: 1 tsp = 6.0g
+    // Sugar: 1 tsp = 4.2g
+    // Oil: 1 tbsp = 13.5g (4.5g/tsp)
+    // Yeast: 1 tsp = 3.1g
+    const BASE_PIZZAS = 4;
+    const BASE_FLOUR = 600;
+
     const recipes = {
       first: {
+        flour: 600,
         water: 450,
         salt: 3,
         sugar: 4,
         oil: 4,
         yeast: 2
       },
-
       recommended: {
+        flour: 600,
         water: 400,
         salt: 3,
         sugar: 2.5,
@@ -144,46 +612,293 @@
       }
     };
 
-    const ingredients = [
-      ["Water", "water", "ml"],
-      ["Salt", "salt", "tsp"],
-      ["Sugar", "sugar", "tsp"],
-      ["Oil", "oil", "tbsp"],
-      ["Yeast", "yeast", "tsp"]
+    // Gram conversion factors per base unit
+    const unitGrams = {
+      flour: 1,
+      water: 1,      // 1 ml = 1 g
+      salt: 6.0,     // 1 tsp = 6g
+      sugar: 4.2,    // 1 tsp = 4.2g
+      oil: 13.5,     // 1 tbsp = 13.5g
+      yeast: 3.1     // 1 tsp = 3.1g
+    };
+
+    const ingredientList = [
+      { name: "Flour", key: "flour", unit: "g" },
+      { name: "Water", key: "water", unit: "ml" },
+      { name: "Salt", key: "salt", unit: "tsp" },
+      { name: "Sugar", key: "sugar", unit: "tsp" },
+      { name: "Oil", key: "oil", unit: "tbsp" },
+      { name: "Yeast", key: "yeast", unit: "tsp" }
     ];
 
-    const flourInput = document.getElementById("flour");
-    const tbody = document.getElementById("ingredients");
+    // Fraction representations
+    function toFraction(val) {
+      const whole = Math.floor(val);
+      const rem = val - whole;
 
-    function format(value) {
-      if (Number.isInteger(value)) return value;
-      return Math.round(value * 4) / 4;
+      if (rem < 0.06) return whole > 0 ? String(whole) : "0";
+      if (rem > 0.94) return String(whole + 1);
+
+      const fracs = [
+        { num: 1, den: 8, str: "⅛" },
+        { num: 1, den: 4, str: "¼" },
+        { num: 1, den: 3, str: "⅓" },
+        { num: 3, den: 8, str: "⅜" },
+        { num: 1, den: 2, str: "½" },
+        { num: 5, den: 8, str: "⅝" },
+        { num: 2, den: 3, str: "⅔" },
+        { num: 3, den: 4, str: "¾" },
+        { num: 7, den: 8, str: "⅞" }
+      ];
+
+      let best = fracs[0];
+      let minDiff = 999;
+      for (const f of fracs) {
+        const diff = Math.abs(rem - (f.num / f.den));
+        if (diff < minDiff) {
+          minDiff = diff;
+          best = f;
+        }
+      }
+
+      return whole > 0 ? `${whole} ${best.str}` : best.str;
     }
 
-    function calculate() {
-      const flour = Number(flourInput.value) || 600;
-      const scale = flour / 600;
+    // Un-confusing spoon formatter
+    // Converts confusing decimal or high-count spoons into clear whole & fraction spoons
+    function formatMeasurement(val, unit, grams) {
+      const gramTag = `<span class="gram-tag">${Math.round(grams * 10) / 10} g</span>`;
 
+      if (unit === "g") {
+        return {
+          primary: `${Math.round(val)} g`,
+          gramTag: "",
+          hint: ""
+        };
+      }
+
+      if (unit === "ml") {
+        return {
+          primary: `${Math.round(val)} ml`,
+          gramTag: `<span class="gram-tag">${Math.round(val)} g</span>`,
+          hint: ""
+        };
+      }
+
+      if (unit === "tbsp") {
+        // If less than 1 tbsp, show spoon equivalent in tsp so user doesn't struggle with 1/2 tbsp
+        if (val < 0.95) {
+          const tspEquiv = val * 3;
+          const fracTbsp = toFraction(val);
+          const fracTsp = toFraction(tspEquiv);
+          return {
+            primary: `${fracTbsp} tbsp`,
+            gramTag,
+            hint: `Use ${fracTsp} tsp (1 tbsp = 3 tsp)`
+          };
+        } else {
+          const wholeTbsp = Math.floor(val);
+          const rem = val - wholeTbsp;
+          const fracVal = toFraction(val);
+          if (rem > 0.08 && rem < 0.92) {
+            const remTsp = rem * 3;
+            return {
+              primary: `${fracVal} tbsp`,
+              gramTag,
+              hint: `${wholeTbsp} tbsp + ${toFraction(remTsp)} tsp`
+            };
+          }
+          return {
+            primary: `${fracVal} tbsp`,
+            gramTag,
+            hint: ""
+          };
+        }
+      }
+
+      if (unit === "tsp") {
+        // If tsp >= 3, prevent user from counting many teaspoons! (3 tsp = 1 tbsp)
+        if (val >= 2.95) {
+          const tbspVal = val / 3;
+          const wholeTbsp = Math.floor(tbspVal);
+          const remTsp = val - wholeTbsp * 3;
+          const totalTspStr = toFraction(val);
+
+          if (remTsp < 0.1) {
+            return {
+              primary: `${wholeTbsp} tbsp`,
+              gramTag,
+              hint: `Equivalent to ${totalTspStr} tsp`
+            };
+          } else {
+            return {
+              primary: `${wholeTbsp} tbsp + ${toFraction(remTsp)} tsp`,
+              gramTag,
+              hint: `Total: ${totalTspStr} tsp`
+            };
+          }
+        } else {
+          return {
+            primary: `${toFraction(val)} tsp`,
+            gramTag,
+            hint: ""
+          };
+        }
+      }
+
+      return {
+        primary: `${toFraction(val)} ${unit}`,
+        gramTag,
+        hint: ""
+      };
+    }
+
+    // Elements
+    const pizzaCountInput = document.getElementById("pizza-count");
+    const pizzaCountLabel = document.getElementById("pizza-count-label");
+    const flourInput = document.getElementById("flour");
+    const btnMinus = document.getElementById("btn-minus");
+    const btnPlus = document.getElementById("btn-plus");
+    const presetsContainer = document.getElementById("presets");
+
+    const tbody = document.getElementById("ingredients-tbody");
+    const recBallWeightEl = document.getElementById("rec-ball-weight");
+    const recTotalWeightEl = document.getElementById("rec-total-weight");
+    const firstBallWeightEl = document.getElementById("first-ball-weight");
+    const firstTotalWeightEl = document.getElementById("first-total-weight");
+
+    // Calculate recipe weights
+    function calculateTotalBatchGrams(recipeKey, scale) {
+      let total = 0;
+      ingredientList.forEach(({ key }) => {
+        const baseVal = recipes[recipeKey][key];
+        const val = baseVal * scale;
+        const grams = val * unitGrams[key];
+        total += grams;
+      });
+      return total;
+    }
+
+    function render(pizzas, flour, source) {
+      if (source === "pizza") {
+        flourInput.value = Math.round(flour);
+      } else if (source === "flour") {
+        pizzaCountInput.value = pizzas % 1 === 0 ? pizzas : pizzas.toFixed(1);
+      }
+
+      // Update plural/singular label
+      pizzaCountLabel.textContent = pizzas === 1 ? "Pizza" : "Pizzas";
+
+      // Update active preset chip
+      document.querySelectorAll(".preset-chip").forEach(chip => {
+        const val = Number(chip.dataset.pizzas);
+        chip.classList.toggle("active", val === pizzas);
+      });
+
+      // Disable minus button at 1
+      btnMinus.disabled = pizzas <= 1;
+
+      // Scale factor relative to 600g flour (4 pizzas)
+      const scale = flour / BASE_FLOUR;
+
+      // Calculate total weights and ball weights
+      const firstTotalGrams = calculateTotalBatchGrams("first", scale);
+      const recTotalGrams = calculateTotalBatchGrams("recommended", scale);
+
+      const firstBallGrams = pizzas > 0 ? firstTotalGrams / pizzas : 0;
+      const recBallGrams = pizzas > 0 ? recTotalGrams / pizzas : 0;
+
+      // Update stat cards
+      firstBallWeightEl.innerHTML = `~${Math.round(firstBallGrams)} <small>g / ball</small>`;
+      firstTotalWeightEl.textContent = `${Math.round(firstTotalGrams).toLocaleString()} g`;
+
+      recBallWeightEl.innerHTML = `~${Math.round(recBallGrams)} <small>g / ball</small>`;
+      recTotalWeightEl.textContent = `${Math.round(recTotalGrams).toLocaleString()} g`;
+
+      // Render ingredient rows
       tbody.innerHTML = "";
 
-      ingredients.forEach(([name, key, unit]) => {
-        const row = document.createElement("tr");
+      ingredientList.forEach(({ name, key, unit }) => {
+        const firstVal = recipes.first[key] * scale;
+        const firstGrams = firstVal * unitGrams[key];
+        const firstM = formatMeasurement(firstVal, unit, firstGrams);
 
-        row.innerHTML = `
-          <td>${name}</td>
-          <td>${format(recipes.first[key] * scale)} ${unit}</td>
-          <td class="recommended">
-            ${format(recipes.recommended[key] * scale)} ${unit}
+        const recVal = recipes.recommended[key] * scale;
+        const recGrams = recVal * unitGrams[key];
+        const recM = formatMeasurement(recVal, unit, recGrams);
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td class="ingredient-name">${name}</td>
+          <td>
+            <div class="measure-box">
+              <div class="primary-measure">
+                <span>${firstM.primary}</span>
+                ${firstM.gramTag}
+              </div>
+              ${firstM.hint ? `<div class="easy-scoop-hint">${firstM.hint}</div>` : ""}
+            </div>
+          </td>
+          <td class="recommended-col">
+            <div class="measure-box">
+              <div class="primary-measure">
+                <span>${recM.primary}</span>
+                ${recM.gramTag}
+              </div>
+              ${recM.hint ? `<div class="easy-scoop-hint">${recM.hint}</div>` : ""}
+            </div>
           </td>
         `;
 
-        tbody.appendChild(row);
+        tbody.appendChild(tr);
       });
     }
 
-    flourInput.addEventListener("input", calculate);
+    // Event Handlers
+    function onPizzaChange() {
+      let count = parseFloat(pizzaCountInput.value);
+      if (isNaN(count) || count < 1) count = 1;
+      const flour = count * (BASE_FLOUR / BASE_PIZZAS);
+      render(count, flour, "pizza");
+    }
 
-    calculate();
+    function onFlourChange() {
+      let flour = parseFloat(flourInput.value);
+      if (isNaN(flour) || flour < 10) flour = 10;
+      const pizzas = flour / (BASE_FLOUR / BASE_PIZZAS);
+      render(pizzas, flour, "flour");
+    }
+
+    btnMinus.addEventListener("click", () => {
+      let current = Math.floor(parseFloat(pizzaCountInput.value) || BASE_PIZZAS);
+      if (current > 1) {
+        current -= 1;
+        pizzaCountInput.value = current;
+        onPizzaChange();
+      }
+    });
+
+    btnPlus.addEventListener("click", () => {
+      let current = Math.floor(parseFloat(pizzaCountInput.value) || BASE_PIZZAS);
+      current += 1;
+      pizzaCountInput.value = current;
+      onPizzaChange();
+    });
+
+    pizzaCountInput.addEventListener("input", onPizzaChange);
+    flourInput.addEventListener("input", onFlourChange);
+
+    presetsContainer.addEventListener("click", (e) => {
+      const chip = e.target.closest(".preset-chip");
+      if (!chip) return;
+      const count = Number(chip.dataset.pizzas);
+      pizzaCountInput.value = count;
+      onPizzaChange();
+    });
+
+    // Initial render
+    onPizzaChange();
   </script>
 </body>
 </html>
